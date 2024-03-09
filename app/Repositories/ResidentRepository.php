@@ -87,7 +87,7 @@ class ResidentRepository
     {
         try {
             $data = Resident::find($id);
-            if (!$data) $this->ApiException('Data tidak ditemukan');
+            if (!$data) $this->ApiException('Data penghuni tidak ditemukan');
             return $data;
         } catch (\Exception $e) {
             throw $e;

@@ -63,7 +63,7 @@ class PaymentTypeRepository
     {
         try {
             $data = PaymentType::find($id);
-            if (!$data) $this->ApiException('Data tidak ditemukan');
+            if (!$data) $this->ApiException('Data jenis pembayaran tidak ditemukan');
             return $data;
         } catch (\Exception $e) {
             throw $e;

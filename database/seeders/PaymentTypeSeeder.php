@@ -17,11 +17,13 @@ class PaymentTypeSeeder extends Seeder
     {
         PaymentType::create([
             'name' => 'Iuran Kebersihan',
-            'type' => GlobalConstant::IN
+            'type' => GlobalConstant::IN,
+            'nominal' => 15000
         ]);
         PaymentType::create([
             'name' => 'Iuran Satpam',
-            'type' => GlobalConstant::IN
+            'type' => GlobalConstant::IN,
+            'nominal' => 100000
         ]);
     }
 }

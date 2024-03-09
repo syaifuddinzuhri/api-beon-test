@@ -8,7 +8,7 @@ use App\Constant\GlobalConstant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class HouseRequest extends FormRequest
+class HouseholderRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,9 +28,9 @@ class HouseRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'name' =>  'required',
-            // 'status' =>  'required|numeric|in:0,1',
-            // 'house_number' =>  'required',
+            'house_id' =>  'required|numeric',
+            'resident_id' =>  'nullable|numeric',
+            'status' =>  'required|numeric|in:0,1',
         ];
         return $rules;
     }
@@ -41,9 +41,9 @@ class HouseRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Nama harus diisi.',
-            'house_number.required' => 'Nomor rumah harus diisi.',
-            'status.required' => 'Status harus diisi.'
+            'status.required' => 'Status harus diisi.',
+            'house_id.required' => 'Rumah harus diisi.',
+            'resident_id.required' => 'Penghuni harus diisi.'
         ];
     }
 

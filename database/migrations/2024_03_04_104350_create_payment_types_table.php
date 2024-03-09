@@ -18,6 +18,7 @@ class CreatePaymentTypesTable extends Migration
             $table->id();
             $table->string('name');
             $table->enum('type', GlobalConstant::PAYMENT_TYPES)->default(GlobalConstant::OUT);
+            $table->float('nominal', 16, 0)->nullable()->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

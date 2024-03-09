@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\HouseController;
+use App\Http\Controllers\API\HouseholderController;
+use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\PaymentTypeController;
 use App\Http\Controllers\API\ResidentController;
+use App\Http\Controllers\API\SettingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
@@ -39,4 +42,8 @@ Route::middleware('jwt.verify')->group(function () {
     Route::apiResource('resident', ResidentController::class);
     Route::apiResource('house', HouseController::class);
     Route::apiResource('payment-type', PaymentTypeController::class);
+    Route::apiResource('householder', HouseholderController::class);
+    Route::group(['prefix' => 'payment'], function () {
+        Route::post('/', [PaymentController::class, 'store']);
+    });
 });

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSettingsTable extends Migration
+class CreateHouseholdersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,13 @@ class CreateSettingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('settings', function (Blueprint $table) {
+        Schema::create('householders', function (Blueprint $table) {
             $table->id();
-            $table->float('security_guard_fee', 16, 0)->default(0);
-            $table->float('cleaning_costs', 16, 0)->default(0);
+            $table->unsignedBigInteger('house_id')->nullable();
+            $table->unsignedBigInteger('resident_id')->nullable();
+            $table->tinyInteger('is_done')->default(0);
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +32,6 @@ class CreateSettingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('settings');
+        Schema::dropIfExists('householders');
     }
 }

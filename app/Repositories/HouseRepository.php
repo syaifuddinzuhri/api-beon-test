@@ -62,7 +62,7 @@ class HouseRepository
     {
         try {
             $data = House::find($id);
-            if (!$data) $this->ApiException('Data tidak ditemukan');
+            if (!$data) $this->ApiException('Data rumah tidak ditemukan');
             return $data;
         } catch (\Exception $e) {
             throw $e;
