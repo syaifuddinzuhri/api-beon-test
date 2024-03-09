@@ -33,12 +33,45 @@ class HouseholderRepository
     {
         try {
             $filter =  [];
-            $query = Householder::whereLike($filter, $request->keyword);
-            if ($request->house) {
+            $query = Householder::with(['resident'])->whereLike($filter, $request->keyword);
+            if ($request->house_id) {
                 $query->where('house_id', $request->house_id);
             }
             $result = $this->datatables($request, $query);
             return $result;
+        } catch (\Exception $e) {
+            throw $e;
+            report($e);
+            return $e;
+        }
+    }
+
+    private function updateResident($payload, $is_detail = true)
+    {
+        try {
+            if ($is_detail) {
+                $this->residentRepository->detail($payload['resident_id']);
+            }
+            $this->residentRepository->updateStatusResident($payload['resident_id'], $payload['resident_status']);
+        } catch (\Exception $e) {
+            throw $e;
+            report($e);
+            return $e;
+        }
+    }
+
+    private function checkStatus($payload)
+    {
+        try {
+            unset($payload['status']);
+            if ($payload['resident_status'] == GlobalConstant::CONTRACT) {
+                if (!isset($payload['start_date']) || !isset($payload['end_date'])) {
+                    $this->ApiException('Tanggal kontrak harus diisi');
+                }
+            } else {
+                $payload['end_date'] = NULL;
+            }
+            return $payload;
         } catch (\Exception $e) {
             throw $e;
             report($e);
@@ -61,42 +94,31 @@ class HouseholderRepository
             $dataAll = Householder::where('house_id', $payload['house_id'])->get();
             $dataResident = Householder::where('resident_id', $payload['resident_id'])->where('is_done', 0)->first();
 
-
             if (!$data && $payload['status'] == 1) {
                 if ($dataResident) {
                     $this->ApiException('Kamu sudah berpenghuni dirumah lain.');
                 }
-
-                $resident = $this->residentRepository->detail($payload['resident_id']);
-                unset($payload['status']);
-                if ($resident->status == GlobalConstant::CONTRACT) {
-                    if (!isset($payload['start_date']) || !isset($payload['end_date'])) {
-                        $this->ApiException('Tanggal kontrak harus diisi');
-                    }
-                } else {
-                    unset($payload['end_date']);
-                }
+                $this->updateResident($payload);
+                $payload = $this->checkStatus($payload);
                 Householder::create($payload);
             } else if ($data && $payload['status'] == 1) {
                 if ($data->resident_id != $payload['resident_id']) {
                     if ($data->is_done == 0) $this->ApiException('Sudah ada yang menghuni');
-                    $resident = $this->residentRepository->detail($payload['resident_id']);
-                    unset($payload['status']);
-                    if ($resident->status == GlobalConstant::CONTRACT) {
-                        if (!isset($payload['start_date']) || !isset($payload['end_date'])) {
-                            $this->ApiException('Tanggal kontrak harus diisi');
-                        }
-                    } else {
-                        unset($payload['end_date']);
-                    }
+                    $this->updateResident($payload);
+                    $payload = $this->checkStatus($payload);
                     Householder::create($payload);
                 } else {
+                    $this->updateResident($payload, false);
+                    $payload = $this->checkStatus($payload);
                     $data->update([
-                        'is_done' => 0
+                        'is_done' => 0,
+                        'start_date' => $payload['start_date'],
+                        'end_date' => $payload['end_date']
                     ]);
                 }
             } else if ($data && $payload['status'] == 0) {
                 foreach ($dataAll as $key => $value) {
+                    $this->residentRepository->updateStatusResident($value->resident_id, NULL);
                     $value->update([
                         'is_done' => 1
                     ]);

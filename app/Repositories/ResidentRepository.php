@@ -108,4 +108,19 @@ class ResidentRepository
             return $e;
         }
     }
+
+    public function updateStatusResident($id, $status)
+    {
+        try {
+            $data = $this->detail($id);
+            $data->update([
+                'status' => $status
+            ]);
+            return true;
+        } catch (\Exception $e) {
+            throw $e;
+            report($e);
+            return $e;
+        }
+    }
 }

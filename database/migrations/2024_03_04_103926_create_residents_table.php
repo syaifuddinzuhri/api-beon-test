@@ -19,7 +19,7 @@ class CreateResidentsTable extends Migration
             $table->string('name');
             $table->string('id_card_photo')->nullable();
             $table->string('phone', 14)->nullable();
-            $table->enum('status', GlobalConstant::RESIDENT_STATUS);
+            $table->enum('status', GlobalConstant::RESIDENT_STATUS)->nullable();
             $table->tinyInteger('is_married');
             $table->timestamps();
             $table->softDeletes();

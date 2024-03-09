@@ -5,15 +5,24 @@ namespace App\Repositories;
 use App\Constant\UploadPathConstant;
 use App\Models\Admin;
 use App\Models\House;
+use App\Models\Householder;
 use App\Models\Resident;
 use App\Traits\GlobalTrait;
 use App\Traits\ImageHandlerTrait;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class HouseRepository
 {
     use GlobalTrait;
+
+    private $residentRepository;
+
+    public function __construct()
+    {
+        $this->residentRepository = new ResidentRepository();
+    }
 
     public function index($request)
     {
@@ -74,10 +83,20 @@ class HouseRepository
     public function delete($id)
     {
         try {
+            DB::beginTransaction();
             $data = $this->detail($id);
+            $dataAll = Householder::where('house_id', $id)->get();
+            foreach ($dataAll as $key => $value) {
+                $this->residentRepository->updateStatusResident($value->resident_id, NULL);
+                $value->update([
+                    'is_done' => 1
+                ]);
+            }
             $data->delete();
+            DB::commit();
             return $data;
         } catch (\Exception $e) {
+            DB::rollback();
             throw $e;
             report($e);
             return $e;
