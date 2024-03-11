@@ -64,6 +64,7 @@ class PaymentRepository
                 if (!$houseHolder) $this->ApiException('Data penghuni tidak valid');
 
                 foreach ($payload['months'] as $key => $value) {
+                    $date = Carbon::create($value['year'], $value['month'], 1);
                     Payment::create([
                         'payment_type_id' => $paymentType->id,
                         'householder_id' => $houseHolder->id,
@@ -71,17 +72,20 @@ class PaymentRepository
                         'nominal' => $paymentType->nominal,
                         'month' => $value['month'],
                         'year' => $value['year'],
-                        'type' => GlobalConstant::IN
+                        'type' => GlobalConstant::IN,
+                        'date' => $date->toDateString()
                     ]);
                 }
             } else {
                 if ($payload['type'] === "monthly") {
+                    $date = Carbon::create($payload['year'], $payload['month'], 1);
                     Payment::create([
                         'type' => GlobalConstant::OUT,
                         'payment_type_id' => $paymentType->id,
                         'nominal' => $payload['nominal'],
                         'month' => $payload['month'],
-                        'year' => $payload['year']
+                        'year' => $payload['year'],
+                        'date' => $date->toDateString()
                     ]);
                 } else {
                     Payment::create([
@@ -97,6 +101,32 @@ class PaymentRepository
             return $payload;
         } catch (\Exception $e) {
             DB::rollBack();
+            throw $e;
+            report($e);
+            return $e;
+        }
+    }
+
+    public function detail($id)
+    {
+        try {
+            $data = Payment::find($id);
+            if (!$data) $this->ApiException('Data pembayaran tidak ditemukan');
+            return $data;
+        } catch (\Exception $e) {
+            throw $e;
+            report($e);
+            return $e;
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            $data = $this->detail($id);
+            $data->delete();
+            return $data;
+        } catch (\Exception $e) {
             throw $e;
             report($e);
             return $e;

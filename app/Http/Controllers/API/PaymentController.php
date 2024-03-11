@@ -41,4 +41,20 @@ class PaymentController extends Controller
             return response()->error($e->getMessage(),  $e->getCode(), $e->getLine(), $e->getFile());
         }
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        try {
+            $data = $this->repository->delete($id);
+            return response()->success($data, 'Data berhasil dihapus!');
+        } catch (\Throwable $e) {
+            return response()->error($e->getMessage(),  $e->getCode(), $e->getLine(), $e->getFile());
+        }
+    }
 }

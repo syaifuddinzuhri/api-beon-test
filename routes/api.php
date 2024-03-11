@@ -5,6 +5,7 @@ use App\Http\Controllers\API\HouseController;
 use App\Http\Controllers\API\HouseholderController;
 use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\PaymentTypeController;
+use App\Http\Controllers\API\ReportController;
 use App\Http\Controllers\API\ResidentController;
 use App\Http\Controllers\API\SettingController;
 use Illuminate\Http\Request;
@@ -46,5 +47,10 @@ Route::middleware('jwt.verify')->group(function () {
     Route::group(['prefix' => 'payment'], function () {
         Route::get('/', [PaymentController::class, 'index']);
         Route::post('/', [PaymentController::class, 'store']);
+        Route::delete('/{id}', [PaymentController::class, 'destroy']);
+    });
+    Route::group(['prefix' => 'report'], function () {
+        Route::get('/', [ReportController::class, 'index']);
+        Route::get('/summary', [ReportController::class, 'summary']);
     });
 });
