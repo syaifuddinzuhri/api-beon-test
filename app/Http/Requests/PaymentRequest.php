@@ -39,7 +39,7 @@ class PaymentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'payment_type_id.required' => 'Jenis pembayaran harus diisi.'
+            'payment_type_id.required' => 'Jenis pembayaran harus diisi.',
         ];
     }
 

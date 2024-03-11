@@ -33,7 +33,77 @@ class PaymentRepository
         $this->householderRepository = new HouseholderRepository();
     }
 
+    public function index($request)
+    {
+        try {
+            $filter =  [];
+            $query = Payment::with(['payment_type', 'resident', 'householder.house'])->whereLike($filter, $request->keyword);
+            if (isset($request->type)) {
+                $query->where('type', $request->type);
+            }
+            $result = $this->datatables($request, $query);
+            return $result;
+        } catch (\Exception $e) {
+            throw $e;
+            report($e);
+            return $e;
+        }
+    }
+
     public function store($request)
+    {
+        try {
+            DB::beginTransaction();
+            $payload = $request->all();
+            $paymentType = $this->paymentTypeRepository->detail($payload['payment_type_id']);
+
+            if ($paymentType->type == GlobalConstant::IN) {
+                $resident = $this->residentRepository->detail($payload['resident_id']);
+                if (count($payload['months']) === 0) $this->ApiException('Gagal menambahkan pembayaran');
+                $houseHolder = $resident->householder;
+                if (!$houseHolder) $this->ApiException('Data penghuni tidak valid');
+
+                foreach ($payload['months'] as $key => $value) {
+                    Payment::create([
+                        'payment_type_id' => $paymentType->id,
+                        'householder_id' => $houseHolder->id,
+                        'resident_id' => $resident->id,
+                        'nominal' => $paymentType->nominal,
+                        'month' => $value['month'],
+                        'year' => $value['year'],
+                        'type' => GlobalConstant::IN
+                    ]);
+                }
+            } else {
+                if ($payload['type'] === "monthly") {
+                    Payment::create([
+                        'type' => GlobalConstant::OUT,
+                        'payment_type_id' => $paymentType->id,
+                        'nominal' => $payload['nominal'],
+                        'month' => $payload['month'],
+                        'year' => $payload['year']
+                    ]);
+                } else {
+                    Payment::create([
+                        'type' => GlobalConstant::OUT,
+                        'payment_type_id' => $paymentType->id,
+                        'nominal' => $payload['nominal'],
+                        'date' => $payload['date']
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return $payload;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+            report($e);
+            return $e;
+        }
+    }
+
+    public function store2($request)
     {
         try {
             DB::beginTransaction();

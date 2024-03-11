@@ -44,6 +44,7 @@ Route::middleware('jwt.verify')->group(function () {
     Route::apiResource('payment-type', PaymentTypeController::class);
     Route::apiResource('householder', HouseholderController::class);
     Route::group(['prefix' => 'payment'], function () {
+        Route::get('/', [PaymentController::class, 'index']);
         Route::post('/', [PaymentController::class, 'store']);
     });
 });

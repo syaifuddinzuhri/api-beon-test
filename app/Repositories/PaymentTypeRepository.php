@@ -23,6 +23,9 @@ class PaymentTypeRepository
                 'name',
             ];
             $query = PaymentType::whereLike($filter, $request->keyword);
+            if(isset($request->type)){
+                $query->where('type', $request->type);
+            }
             $result = $this->datatables($request, $query);
             return $result;
         } catch (\Exception $e) {

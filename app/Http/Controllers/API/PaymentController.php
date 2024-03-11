@@ -17,6 +17,21 @@ class PaymentController extends Controller
         $this->repository = new PaymentRepository();
     }
 
+      /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        try {
+            $data = $this->repository->index($request);
+            return response()->success($data, 'Data berhasil didapatkan!');
+        } catch (\Throwable $e) {
+            return response()->error($e->getMessage(),  $e->getCode(), $e->getLine(), $e->getFile());
+        }
+    }
+
     public function store(PaymentRequest $request)
     {
         try {

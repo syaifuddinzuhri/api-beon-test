@@ -1,5 +1,6 @@
 <?php
 
+use App\Constant\GlobalConstant;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,6 +18,7 @@ class CreateHouseholdersTable extends Migration
             $table->id();
             $table->unsignedBigInteger('house_id')->nullable();
             $table->unsignedBigInteger('resident_id')->nullable();
+            $table->enum('resident_status', GlobalConstant::RESIDENT_STATUS);
             $table->tinyInteger('is_done')->default(0);
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();

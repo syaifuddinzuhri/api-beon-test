@@ -22,4 +22,24 @@ class Householder extends Model
     {
         return $this->belongsTo(Resident::class);
     }
+
+    /**
+     * Get the house that owns the Householder
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function house(): BelongsTo
+    {
+        return $this->belongsTo(House::class);
+    }
+
+    /**
+     * Get the payment_type that owns the Householder
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function payment_type(): BelongsTo
+    {
+        return $this->belongsTo(PaymentType::class);
+    }
 }

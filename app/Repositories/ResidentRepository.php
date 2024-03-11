@@ -20,7 +20,10 @@ class ResidentRepository
             $filter =  [
                 'name',
             ];
-            $query = Resident::whereLike($filter, $request->keyword);
+            $query = Resident::with(['householder'])->whereLike($filter, $request->keyword);
+            if(isset($request->status) && $request->status == "active"){
+                $query->whereNotNull('status');
+            }
             $result = $this->datatables($request, $query);
             return $result;
         } catch (\Exception $e) {
@@ -86,7 +89,7 @@ class ResidentRepository
     public function detail($id)
     {
         try {
-            $data = Resident::find($id);
+            $data = Resident::with(['householder'])->find($id);
             if (!$data) $this->ApiException('Data penghuni tidak ditemukan');
             return $data;
         } catch (\Exception $e) {
