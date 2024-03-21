@@ -21,8 +21,8 @@ class CreatePaymentsTable extends Migration
             $table->unsignedBigInteger('payment_type_id')->nullable();
             $table->enum('type', GlobalConstant::PAYMENT_TYPES)->default(GlobalConstant::IN);
             $table->date('date')->nullable();
-            $table->tinyInteger('month')->nullable()->after('date');
-            $table->integer('year')->nullable()->after('date');
+            $table->tinyInteger('month')->nullable();
+            $table->integer('year')->nullable();
             $table->float('nominal', 16, 0)->nullable()->default(0);
             $table->timestamps();
             $table->softDeletes();
